@@ -23,8 +23,10 @@ export const addMessage = (message: Message) => {
 export const createChatStream = (signal: AbortSignal) => {
     let intervalId: ReturnType<typeof setInterval>
 
+    // use an ID to ease the cleanup
     const id = randomUUID()
 
+    // cleanup should a) remove the listener and b) clear the heartbeat, if applicable
     const cleanup = () => {
         delete listeners[id]
 
@@ -37,11 +39,15 @@ export const createChatStream = (signal: AbortSignal) => {
 
     return new ReadableStream({
         start(controller) {
+            // start the heartbeat
             intervalId = setInterval(() => {
                 controller.enqueue(": heartbeat.\n\n")
             }, 5000)
 
+            // register the notify callback in the `listeners` lookup
             listeners[id] = () => controller.enqueue(getEventText())
+
+            // call immediately to send the current state of all messages as initial message
             listeners[id]()
         },
         cancel() {

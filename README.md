@@ -17,6 +17,7 @@ Open a second browser and start chatting with yourself.
 
 - the resource route at `/listen` returns a `text/event-stream` response, hence the route serves as an event source
 - this resource route also automatically creates a `ReadableStream` 
-  - that includes a heartbeat (see [routes/chat-room.server.ts](./app/routes/chat-room.server.ts))
+  - that includes a heartbeat (see [routes/chat-room.server.ts](./app/routes/chat-room.server.ts)) running every 5 seconds
+    - sidenote: I increased the `streamTimeout` from 5 to 10 seconds (in [entry.server.tsx](./app/entry.server.tsx))
   - registers a callback that can be called everytime a new message is added to the chatroom 
 - everytime a message is sent to the server (POSTing to `/`) all active event-sourced `ReadableStream` instances are notified
